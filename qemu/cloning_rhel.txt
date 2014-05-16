@@ -1,0 +1,43 @@
+Issue
+=====
+    An RHEL6 guest which has "eth0" as its interface is cloned using "virt-clone".The cloned machine doesn't have "eth0" anymore and it has named its interface as eth1.
+    Like that if we clone a guest which has eth0 and eth1, then the cloned guests' interfaces will be named as eth2 and eth3. How can we resolve this?
+
+    The cloned machine will display the below error message while starting network interface eth0 as per /etc/sysconfig/network-scripts/ifcfg-eth0
+
+    "Device eth0 does not seem to be present, delaying initializtion"
+
+Below is /etc/sysconfig/network-scripts/ifcfg-eth0 for the newly cloned guest which is a copy of the original machine from which a clone was created.
+
+DEVICE="eth0"
+HWADDR="52:54:00:5B:1C:AA"
+NM_CONTROLLED="no"
+BOOTPROTO="dhcp"
+ONBOOT="yes"
+
+
+Resolution
+==========
+
+Below steps can be followed the resolve this issue.
+
+On the source machine, do the below actions.
+
+    Edit /etc/udev/rules.d/70-persistent-net rules and remove all reference to ethx - mac address mapping from it.
+
+    Edit /etc/sysconfig/network-scripts/ifcfg-eth0 and remove HWADDR line from it.
+
+    Shut down the machine and create clone out of it.
+
+The cloned machine will now have eth0 recognized properly and /etc/udev/rules.d/70-persistent-net populated with correct eth0 -> MAC address mapping.
+
+The other way to resolve this issue is to do the above actions on the cloned machine, but you will end up doing this task manually on all cloned machines.
+
+The steps above (Either on the template or cloned virtual machine) can be done using "virt-sysprep" before booting the guest. This can be automated via some scripting if needed. virt-sysprep is provided by libguestfs-tools package. Refer bug 647174 for details.
+Root Cause
+
+This happens because the original machine has a udev rule like the below one in /etc/udev/rules.d/70-persistent-net.rules which maps eth0 to its mac address. The cloned machine should have a different mac address, hence the new mac address cannot be mapped to eth0. Hence it selects the next available name (eth1),
+
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="52:54:00:c5:53:c7", ATTR{type}=="1", KERNEL=="eth*", NAME="eth0"
+
+
