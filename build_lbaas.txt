@@ -1,0 +1,68 @@
+Building LBaaS rpms from source
+
+Prerequisites
+
+You need the following software to build the packages:
+
+    Openstack VM with Openshift Enterprise 1.2 broker installed.
+    Python-setuptools (yum)
+    Git.
+    Tito - dgoodwin/tito · GitHub
+    Scl-utils-build - get it here
+    Custom ruby rpms - from here (have to be on the Red Hat vpn to download them)
+        ruby193-build,
+        ruby193-rubygems,
+        ruby193-rubygems-devel
+
+Building the Load-Balancer Daemon, Util, and Common Packages
+
+Git clone openshift-extras:
+
+    git clone https://github.com/Miciah/openshift-extras.git  
+    cd openshift-extras  
+    git checkout origin/load-balancer-initial-commit  
+
+Tito build the three packages:
+
+    rubygem-openshift-origin-load-balancer-common, in admin/load-balancer/common
+    rubygem-openshift-origin-load-balancer-daemon, in admin/load-balancer/daemon
+    openshift-origin-load-balancer-util, in admin/load-balancer/util
+
+    for d in common daemon util  
+    do pushd admin/load-balancer/$d &&  
+       tito build --rpm --offline &&  
+       popd ||  
+       break; \  
+      done  
+
+Installing and Starting the Daemon
+
+After the above steps, all .rpms can be found in /tmp/tito/noarch:
+
+    cd /tmp/tito/noarch  
+    rpm -iU *rpm  
+
+Edit the /etc/activemq/activemq.xml and /etc/openshift/plugins.d/openshift-origin-routing-activemq.conf files as per the plugins/routing/activemq/README file in the origin-server Github repo, and edit the /etc/openshift/load-balancer.conf file as per the admin/load-balancer/README.md file in the openshift-extras repo.
+
+Start the load-balancer daemon:
+
+    openshift-load-balancer-daemon start  
+
+The daemon will log to /var/log/openshift/load-balancer-daemon.log.
+
+Modifying the Code
+
+If you make modifications to the daemon, then you need to git commit your changes, then use tito tag on each package that you modified in order to update its version, and finally rebuild each package.  For example, if you modified the rubygem-openshift-origin-load-balancer-daemon package, first commit your changes:
+
+    git commit -av  
+
+Then changed directories to the directory with the rubygem-openshift-origin-load-balancer-daemon.spec file, tito tag, and tito build:
+
+    pushd admin/load-balancer/daemon &&  
+    tito tag --offline --accept-auto-changelog &&  
+    tito build --rpm --offline &&  
+    popd  
+
+The tito tag command automatically updates the version in the .spec file, commits the change, and creates a new Git tag.
+
+Perform the above steps for each package that you modified.  Do not perform the above steps for any package that you did not modify because that will create a blank changelog entry in the .spec file and bump the version number unnecessarily.
