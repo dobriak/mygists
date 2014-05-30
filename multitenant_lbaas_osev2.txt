@@ -1,0 +1,110 @@
+Prerequisites 
+
+OpenShift Enterprise version 2.0 and up 
+Routing plugin installed and configured 
+Load-Balancer Daemon 
+
+Passing Environment Variables on Application Creation 
+
+OpenShift Enterprise version 2.0 comes with a model field that allows for environment variables to be stored into mongodb if they are passed at application creation time. 
+
+In order for that to work, we need to add code that would actually store all those environment variables into the field: 
+
+In self.create_app of controller/app/models/application.rb :
+... 
+#Save user environment variables in the meta field 
+if user_env_vars 
+  app . meta = {} 
+  user_env_vars . each { | env_hash | app . meta [ env_hash [ "name" ]] = env_hash [ "value" ] } 
+end 
+...
+Routing plugin changes 
+
+Once we have OpenShift saving the environment variables into the meta filed, lets allow the routing plugin to actually send that data into the ActiveMQ topic used by the load-balancer daemon: 
+
+In plugins/routing/activemq/lib/openshift/activemq_routing_plugin.rb : 
+
+def notify_create_application ( app ) 
+  msg = { 
+    :action => :create_application , 
+    :app_name => app . name , 
+    :namespace => app . domain . namespace , 
+    :meta => app . meta 
+  } 
+
+Similarly, add :meta to the other life cycle events being advertised on the ActiveMQ topic: 
+
+notify_delete_application 
+notify_create_public_endpoint 
+notify_delete_public_endpoint 
+
+Load-Balancer Daemon Configuration 
+
+The load-balancer daemon expects a Hash value called "meta" (that can also be empty) containing environment variables named with a specific format: 
+
+<VARNAME><NUMBER>, for example meta['host1']='127.0.0.2'. 
+
+The idea is to enumerate all tenant configuration data using the same number, so if we are setting up total of 2 tenants for our application, we would have:
+host1, tenant1,keystone_host1, etc 
+host2, tenant2, keystone_host2, etc. 
+
+Starting with version 2.0, rhc create-app accepts a path to a text file with multiple environment variables (one per line). The following are 2 examples of text files containing the needed environment variables to set up load balancing with 3 tenants: 
+
+LBaaS Multitenant Front-end Application: 
+is_frontend=1 
+host1=127.0.0.2 
+tenant1=openshift2 
+timeout1=302 
+open_timeout1=302 
+keystone_host1=10.0.0.2 
+keystone_username1=user2 
+keystone_password1=passwd2 
+keystone_tenant1=lbms2 
+host2=127.0.0.3 
+tenant2=openshift3 
+timeout2=303 
+open_timeout2=303 
+keystone_host2=10.0.0.3 
+keystone_username2=user3 
+keystone_password2=passwd3 
+keystone_tenant2=lbms3 
+host3=127.0.0.4 
+tenant3=openshift4 
+timeout3=304 
+open_timeout3=304 
+keystone_host3=10.0.0.4 
+keystone_username3=user4 
+keystone_password3=passwd4 
+keystone_tenant3=lbms4 
+
+LBaaS Multitenant Middle Tier Application 
+is_frontend=0 
+host1=127.0.0.2 
+tenant1=openshift2 
+timeout1=302 
+open_timeout1=302 
+keystone_host1=10.0.0.2 
+keystone_username1=user2 
+keystone_password1=passwd2 
+keystone_tenant1=lbms2 
+service_port1=1002 
+host2=127.0.0.3 
+tenant2=openshift3 
+timeout2=303 
+open_timeout2=303 
+keystone_host2=10.0.0.3 
+keystone_username2=user3 
+keystone_password2=passwd3 
+keystone_tenant2=lbms3 
+service_port2=1003 
+host3=127.0.0.4 
+tenant3=openshift4 
+timeout3=304 
+open_timeout3=304 
+keystone_host3=10.0.0.4 
+keystone_username3=user4 
+keystone_password3=passwd4 
+keystone_tenant3=lbms4 
+service_port3=1004 
+
+ 
