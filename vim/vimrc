@@ -5,3 +5,4 @@
 :map <F7> :tabp<CR>
 :map <F8> :tabn<CR>
 :set pastetoggle=<F2>
+:colo delek
