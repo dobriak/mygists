@@ -1,5 +1,6 @@
 #!/bin/bash
 # on the host: yum install lldpad (cdpr for cisco only stuff)
+# load lldpad in memory: lldpad -d
 # once you run the script (make sure to verify listing of eths will work
 # for your set up, run this on Arista: show lldp neighbors
 for i in `ls /sys/class/net/ | grep en`; do
