@@ -5,3 +5,5 @@
 ## See http://en.wikipedia.org/wiki/Cisco_Discovery_Protocol
 
 tcpdump -v -s 1500 -c 1 'ether[20:2] == 0x2000'
+
+# or, alternatively, yum install cdpr; cdpr -d <interface name>
