@@ -1,4 +1,3 @@
-
 #!/bin/bash
 # Easy mass pinging
 
