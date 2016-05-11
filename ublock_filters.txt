@@ -1,0 +1,5 @@
+!Filter annoying youtube annotations
+||youtube.com/annotations_
+
+
+
