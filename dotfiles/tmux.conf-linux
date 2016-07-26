@@ -1,0 +1,42 @@
+set -g default-terminal "screen-256color"
+
+#Use backtick as prefix
+unbind C-b
+set -g prefix `
+bind ` send-prefix
+
+bind-key L last-window
+
+#Start numbering at 1
+set -g base-index 1
+
+#Allow mouse to select pane
+#set -g mouse-select-pane on
+set -g history-limit 10000
+
+#Set status bar
+set -g status-justify left
+set -g status-bg black
+set -g status-fg white
+set-option -g status-interval 5
+set -g status-right-length 150
+set -g status-left ""
+set -g status-right "#[fg=green] %m-%d-%Y %H:%M #(whoami)"
+
+# Rather than constraining window size to the maximum size of any client 
+# connected to the *session*, constrain window size to the maximum size of any 
+# client connected to *that window*. Much more reasonable.
+setw -g aggressive-resize on
+
+# Highlight active window
+set-window-option -g window-status-current-bg red
+
+#Resize  panes
+bind j resize-pane -D 10
+bind k resize-pane -U 10
+bind l resize-pane -L 10
+bind h resize-pane -R 10
+
+#set-option -g mouse on
+#set -g mode-mouse on
+#set -g mouse-resize-pane on
