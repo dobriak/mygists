@@ -18,7 +18,7 @@ ip link set $GW1 netns bondns
 ip link set $GW2 netns bondns
 
 ip netns exec bondns ip link add name bond-ns type bond
-ip netns exec bondns echo 4 > /sys/class/net/bond-ns/bonding/mode
+ip netns exec bondns su -c "echo 4 > /sys/class/net/bond-ns/bonding/mode"
 ip netns exec bondns ip link set $GW1 master bond-ns
 ip netns exec bondns ip link set $GW2 master bond-ns
 ip netns exec bondns ip link set dev $GW1 up
@@ -45,7 +45,7 @@ ip link set dev veth-gwa master virbr5
 ip link set dev veth-gwa up
 ip netns exec bondns ip link set dev veth-gwb up
 ip netns exec bondns ip route add default via 172.16.111.1
-ip netns exec bondns echo 1 > /proc/sys/net/ipv4/ip_forward
+ip netns exec bondns su -c "echo 1 > /proc/sys/net/ipv4/ip_forward"
 ip netns exec bondns iptables -t nat -A POSTROUTING -o veth-gwb -j MASQUERADE
 ip netns exec bondns iptables -A FORWARD -i bondns-br -o veth-gwb -m state --state RELATED,ESTABLISHED -j ACCEPT
 ip netns exec bondns iptables -A FORWARD -i bondns-br -o veth-gwb -j ACCEPT
