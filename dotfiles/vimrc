@@ -1,8 +1,19 @@
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
 :set autoindent
-:set shiftwidth=2
-:set tabstop=2
+:set shiftwidth=4
+:set tabstop=4
 :set expandtab
+":autocmd FileType python map <buffer> <F3> :call Flake8()<CR>
 :map <F7> :tabp<CR>
 :map <F8> :tabn<CR>
 :set pastetoggle=<F2>
-:colo delek
+:syntax on
+:colo slate
+" set number
+set background=dark
+set colorcolumn=80
+highlight ColorColumn ctermbg=233
+autocmd Filetype gitcommit setlocal spell
+set mouse=a

@@ -1,0 +1,22 @@
+[user]
+	name = 
+	email = 
+[push]
+	default = simple
+[core]
+    editor = vim
+	excludesfile = /Users/juliann/.gitignore
+[alias]
+    amend     = commit --amend -a
+    br        = branch 
+    co        = checkout
+    ds        = diff --staged
+    di        = diff
+    fetchall  = fetch -v --all
+    log-fancy = log --graph --pretty=format:'%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %C(cyan)<%an>%Creset' --abbrev-commit --date=relative
+    log-me    = !UN=$(git config user.name)&& git log --author="\"$UN\"" --pretty=format:'%h %cd %s' --date=short
+    log-nice  = log --graph --decorate --pretty=oneline --abbrev-commit
+    panic     = !tar cvf ../git_panic.tar *
+    review    = push origin HEAD:refs/for/master
+    st        = status
+    wdiff     = diff --word-diff=plain
