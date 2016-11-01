@@ -1,0 +1,14 @@
+# Adds git info to the prompt (__git_ps1)
+# and autocompletion for git commands and branches
+source ~/.git-prompt.sh
+if [ -f ~/.git-completion.bash ]; then
+  . ~/.git-completion.bash
+fi
+alias ls="ls -G"
+alias ll="ls -l"
+alias la="ls -al"
+export PS1="[\u@\h\w\$(__git_ps1)]:"
+export GPGKEY=12378D86
+export GOPATH=/Users/juliann/development/workspace/golang
+export PATH=${PATH}:${GOPATH}/bin
+export HOMEBREW_NO_ANALYTICS=1
