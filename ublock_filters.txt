@@ -1,5 +1,10 @@
 !Filter annoying youtube annotations
 ||youtube.com/annotations_
 
+!dsfcu ads
+||epal.desertschools.org/GetCampaignImage.ashx?id=
+
+!linkedin ads
+www.linkedin.com##.has-snippets.lyndaCourse-singleton.feed-update > .content
 
 
