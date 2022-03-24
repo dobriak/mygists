@@ -48,7 +48,7 @@ echo "Connecting to ${boxes} in an endless loop. To stop it: ${0} kill"
 (while true; do
 	for h in $boxes ; do
 		curl -m 3 ${h}
-		sleep 3s
+		sleep 15s
 	done
 done) &> $log &
 echo $! > $pid
