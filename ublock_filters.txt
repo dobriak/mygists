@@ -1,6 +1,5 @@
 !Filter annoying youtube annotations
 ||youtube.com/annotations_
-
 !linkedin ads
 www.linkedin.com##.has-snippets.lyndaCourse-singleton.feed-update > .content
 
