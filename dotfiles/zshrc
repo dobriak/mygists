@@ -1,0 +1,10 @@
+setopt HIST_SAVE_NO_DUPS
+setopt INC_APPEND_HISTORY
+
+# Original prompt %n@%m %1~ %#
+PROMPT="%(?.%F{green}●%f.%F{red}⛔︎︎%f) %F{7}%n@%m %1~%f $ "
+eval "$(/opt/homebrew/bin/brew shellenv)"
+alias ll='ls -la'
+alias k='kubectl'
+alias kx='kubectx'
+alias kn='kubens'
